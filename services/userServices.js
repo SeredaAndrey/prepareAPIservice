@@ -8,6 +8,10 @@ const createNewUserService = async (user) => {
   return await User.findOne({ user });
 };
 
+const loginUserService = async (user) => {
+  return await User.findOne({ user });
+};
+
 const getAllUsersDataService = async ({ skip, limit }) => {
   const count = await User.find({}).count();
   const countInPage = await User.find({}).skip(skip).limit(limit).count();
@@ -65,6 +69,7 @@ const deleteUserFromFollowingListService = async (_id, userId) => {
 
 module.exports = {
   createNewUserService,
+  loginUserService,
   getAllUsersDataService,
   getSingleUserDataService,
   pathUserFollowingService,

@@ -1,5 +1,13 @@
 const User = require("../schemas/userSchema");
 
+const createNewUserService = async (user) => {
+  const data = await User.findOne({ user });
+  if (data) return;
+  const newUser = new User({ user });
+  await newUser.save();
+  return await User.findOne({ user });
+};
+
 const getAllUsersDataService = async ({ skip, limit }) => {
   const count = await User.find({}).count();
   const countInPage = await User.find({}).skip(skip).limit(limit).count();
@@ -56,6 +64,7 @@ const deleteUserFromFollowingListService = async (_id, userId) => {
 };
 
 module.exports = {
+  createNewUserService,
   getAllUsersDataService,
   getSingleUserDataService,
   pathUserFollowingService,

@@ -1,10 +1,31 @@
-const { FoundingError, ValidateError } = require("../middleware/errorHandler");
+const {
+  FoundingError,
+  ValidateError,
+  ConflictError,
+} = require("../middleware/errorHandler");
 const {
   getAllUsersDataService,
   getSingleUserDataService,
   pathUserFollowingService,
+  createNewUserService,
 } = require("../services/userServices");
 const { paginationQueryValidation } = require("../validate/paginationValidate");
+const { createUserValidation } = require("../validate/userValidate");
+
+const createNewUserController = async (req, res, next) => {
+  const reqValidate = createUserValidation.validate(req.body);
+  if (!reqValidate.error) {
+    const { user } = req.body;
+    const newUser = await createNewUserService(user);
+    if (newUser) {
+      res.status(201).json({
+        message: "user created success",
+        code: 200,
+        data: newUser,
+      });
+    } else throw new ConflictError("name already in use");
+  } else throw new ValidateError(reqValidate.error);
+};
 
 const getAllUsersDataController = async (req, res, next) => {
   const reqValidate = paginationQueryValidation.validate(req.query);
@@ -57,6 +78,7 @@ const pathUserFollowingController = async (req, res, next) => {
 };
 
 module.exports = {
+  createNewUserController,
   getAllUsersDataController,
   getSingleUserDataController,
   pathUserFollowingController,

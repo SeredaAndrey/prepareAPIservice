@@ -6,10 +6,12 @@ const {
   getAllUsersDataController,
   getSingleUserDataController,
   pathUserFollowingController,
+  createNewUserController,
 } = require("../controllers/userControllers");
 
 const router = express.Router();
 
+router.post("/", asyncWrapper(createNewUserController));
 router.get("/", asyncWrapper(getAllUsersDataController));
 router.get("/:userId", asyncWrapper(getSingleUserDataController));
 router.patch("/following/:userId", asyncWrapper(pathUserFollowingController));

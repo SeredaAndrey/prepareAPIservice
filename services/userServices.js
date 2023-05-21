@@ -12,7 +12,42 @@ const loginUserService = async (user) => {
   return await User.findOne({ user });
 };
 
-const getAllUsersDataService = async ({ skip, limit }) => {
+const getAllUsersDataService = async ({ skip, limit, filter, userId }) => {
+  if (!userId || filter === "all") {
+    return await getAllUsersDataWithoutFilter({ skip, limit });
+  } else {
+    const { following } = await getSingleUserDataService(userId);
+    if (filter === "following") {
+      const count = await User.find({ _id: following }).count();
+      const countInPage = await User.find({ _id: following })
+        .skip(skip)
+        .limit(limit)
+        .count();
+      const users = await User.find({ _id: following }).skip(skip).limit(limit);
+      return {
+        count,
+        countInPage,
+        users,
+      };
+    } else if (filter === "follow") {
+      const count = await User.find({ $nor: [{ _id: following }] }).count();
+      const countInPage = await User.find({ $nor: [{ _id: following }] })
+        .skip(skip)
+        .limit(limit)
+        .count();
+      const users = await User.find({ $nor: [{ _id: following }] })
+        .skip(skip)
+        .limit(limit);
+      return {
+        count,
+        countInPage,
+        users,
+      };
+    }
+  }
+};
+
+const getAllUsersDataWithoutFilter = async ({ skip, limit }) => {
   const count = await User.find({}).count();
   const countInPage = await User.find({}).skip(skip).limit(limit).count();
   const users = await User.find({}).skip(skip).limit(limit);

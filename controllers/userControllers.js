@@ -46,10 +46,11 @@ const loginUserController = async (req, res, next) => {
 const getAllUsersDataController = async (req, res, next) => {
   const reqValidate = paginationQueryValidation.validate(req.query);
   if (!reqValidate.error) {
-    let { page = 1, limit = 3 } = req.query;
+    let { page = 1, limit = 3, filter = "all" } = req.query;
+    const { userId } = req.body;
     limit = parseInt(limit);
     const skip = (parseInt(page) - 1) * limit;
-    const users = await getAllUsersDataService({ skip, limit });
+    const users = await getAllUsersDataService({ skip, limit, filter, userId });
     if (users) {
       res.status(200).json({
         message: "Users found success",
@@ -58,6 +59,7 @@ const getAllUsersDataController = async (req, res, next) => {
         count: users.count,
         countInPage: users.countInPage,
         page: page,
+        filter: filter,
       });
     } else throw new FoundingError("Users list not found");
   } else throw new ValidateError(reqValidate.error);

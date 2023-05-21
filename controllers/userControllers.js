@@ -46,8 +46,8 @@ const loginUserController = async (req, res, next) => {
 const getAllUsersDataController = async (req, res, next) => {
   const reqValidate = paginationQueryValidation.validate(req.query);
   if (!reqValidate.error) {
-    let { page = 1, limit = 3, filter = "all" } = req.query;
-    const { userId } = req.body;
+    let { page = 1, limit = 3, filter = "all", userId } = req.query;
+    // const { userId } = req.body;
     limit = parseInt(limit);
     const skip = (parseInt(page) - 1) * limit;
     const users = await getAllUsersDataService({ skip, limit, filter, userId });

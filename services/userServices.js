@@ -18,24 +18,30 @@ const getAllUsersDataService = async ({ skip, limit, filter, userId }) => {
   } else {
     const { following } = await getSingleUserDataService(userId);
     if (filter === "following") {
-      const count = await User.find({ _id: following }).count();
-      const countInPage = await User.find({ _id: following })
+      const count = await User.find({ _id: { $in: following } }).count();
+      const countInPage = await User.find({ _id: { $in: following } })
         .skip(skip)
         .limit(limit)
         .count();
-      const users = await User.find({ _id: following }).skip(skip).limit(limit);
+      const users = await User.find({ _id: { $in: following } })
+        .skip(skip)
+        .limit(limit);
       return {
         count,
         countInPage,
         users,
       };
     } else if (filter === "follow") {
-      const count = await User.find({ $nor: [{ _id: following }] }).count();
-      const countInPage = await User.find({ $nor: [{ _id: following }] })
+      const count = await User.find({
+        $nor: [{ _id: { $in: following } }],
+      }).count();
+      const countInPage = await User.find({
+        $nor: [{ _id: { $in: following } }],
+      })
         .skip(skip)
         .limit(limit)
         .count();
-      const users = await User.find({ $nor: [{ _id: following }] })
+      const users = await User.find({ $nor: [{ _id: { $in: following } }] })
         .skip(skip)
         .limit(limit);
       return {
